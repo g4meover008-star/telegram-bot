@@ -3,9 +3,6 @@ venv/
 .env
 
 # Ignorar archivos de sesión de Telethon
-*.session
-*.session-journal
-session/
 
 # Archivos temporales de Python
 __pycache__/
