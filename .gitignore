@@ -1,8 +1,20 @@
-# Ignorar sesiones de Telethon
-*.session
-*.session-journal
-/session/
-
 # Ignorar entornos virtuales
 venv/
 .env
+
+# Ignorar archivos de sesión de Telethon
+*.session
+*.session-journal
+session/
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+
+# Configuración del sistema
+.DS_Store
+Thumbs.db
