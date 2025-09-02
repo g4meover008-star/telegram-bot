@@ -1,0 +1,8 @@
+# Ignorar sesiones de Telethon
+*.session
+*.session-journal
+/session/
+
+# Ignorar entornos virtuales
+venv/
+.env
