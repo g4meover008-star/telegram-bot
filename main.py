@@ -47,7 +47,7 @@ SERVICIO_VIP = "@Servicio_VIPBot"
 CODIGOS_NETFLIX = "@codigosnetflix_bot"
 VIP_REEMPLAZARBOT = "@VIPREEMPLAZARBOT"
 
-COOLDOWN_SECONDS = 3.5
+COOLDOWN_SECONDS = 5.5
 WAIT_TIMEOUT = 300
 
 
@@ -1162,17 +1162,8 @@ async def main():
     app.add_handler(MessageHandler(filters.Document.MimeType("text/plain") & filters.CaptionRegex(r"^/registrarcorreos\b"), doc_registrarcorreos))
     app.add_handler(MessageHandler(filters.Document.MimeType("text/plain") & (filters.CaptionRegex(r"^/asignar\s+\d+$") | filters.CaptionRegex(r"^/remover\s+\d+$")), doc_asignar_remover))
 
-  if __name__ == "__main__":
-    PORT = int(os.getenv("PORT", 8080))
-    URL = os.getenv("RAILWAY_STATIC_URL", "https://telegram-bot-production-56c0.up.railway.app")
+    log.info("🤖 Bot listo. Escuchando…")
+    await app.run_polling()
 
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-
-    log.info("🤖 Bot listo con Webhook. Escuchando en Railway…")
-
-    app.run_webhook(
-        listen="0.0.0.0",
-        port=PORT,
-        url_path=BOT_TOKEN,
-        webhook_url=f"{URL}/{BOT_TOKEN}"
-    )
+if __name__ == "__main__":
+    asyncio.run(main())
