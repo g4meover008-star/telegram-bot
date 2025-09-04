@@ -1,10 +1,11 @@
 python-telegram-bot==20.3
 telethon==1.40.0
 
-# Supabase estable
+# Supabase y dependencias compatibles
 supabase==2.5.1
+gotrue==2.5.4
 
-# Versiones compatibles de httpx y httpcore
+# httpx/httpcore compatibles con PTB 20.x
 httpx==0.24.1
 httpcore==0.17.3
 
