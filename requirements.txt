@@ -1,7 +1,12 @@
 python-telegram-bot==20.3
 telethon==1.40.0
-supabase==2.4.1
+
+# Supabase estable
+supabase==2.5.1
+
+# Versiones compatibles de httpx y httpcore
 httpx==0.24.1
 httpcore==0.17.3
+
 python-dotenv
 nest_asyncio
