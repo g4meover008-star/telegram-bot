@@ -1,12 +1,7 @@
-python-telegram-bot==21.6
+python-telegram-bot==20.3
 telethon==1.40.0
-
-# Supabase stack compatible con httpx>=0.26
 supabase==2.4.1
-
-# httpx nuevo para gotrue/supabase
 httpx==0.27.0
 httpcore==1.0.5
-
 python-dotenv
 nest_asyncio
