@@ -596,18 +596,46 @@ async def cmd_renovar(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await say_err(update, "La respuesta no coincide con el correo solicitado.")
         return
 
-    nueva = (datetime.utcnow().date() + timedelta(days=30)).isoformat()
+    # === NUEVO CÁLCULO DE VENCIMIENTO ===
+    hoy = datetime.utcnow().date()
+    base = hoy
     try:
-        if not obtener_asignacion_activa(uid, correo):
-            supabase.table("correos").upsert({"correo": correo, "vencimiento": nueva}, on_conflict="correo").execute()
-            supabase.table("asignaciones").insert({"correo": correo, "usuario_id": uid, "fecha_venc": nueva, "asignado_por": "renovacion", "activo": True}).execute()
-        else:
-            supabase.table("asignaciones").update({"fecha_venc": nueva}).eq("usuario_id", uid).eq("correo", correo).eq("activo", True).execute()
+        asig = obtener_asignacion_activa(uid, correo)
+        if asig and asig.get("fecha_venc"):
+            venc_actual = datetime.fromisoformat(str(asig["fecha_venc"])).date()
+            # Extender desde la mayor entre hoy y la fecha actual:
+            base = max(venc_actual, hoy)
+    except Exception:
+        pass
 
+    nueva = (base + timedelta(days=30)).isoformat()
+    # =====================================
+
+    try:
+        # upsert en correos
+        supabase.table("correos").upsert(
+            {"correo": correo, "vencimiento": nueva}, on_conflict="correo"
+        ).execute()
+
+        # actualizar o insertar asignación activa
+        if not obtener_asignacion_activa(uid, correo):
+            supabase.table("asignaciones").insert({
+                "correo": correo, "usuario_id": uid, "fecha_venc": nueva,
+                "asignado_por": "renovacion", "activo": True
+            }).execute()
+        else:
+            supabase.table("asignaciones").update({"fecha_venc": nueva}) \
+                .eq("usuario_id", uid).eq("correo", correo).eq("activo", True).execute()
+
+        # descontar crédito y registrar hist.
         set_creditos(uid, get_creditos(uid) - 1)
         try:
-            supabase.table("creditos_historial").insert({"usuario_id": uid, "delta": -1, "motivo": "renovacion", "hecho_por": "servicio_vip"}).execute()
-        except Exception: pass
+            supabase.table("creditos_historial").insert({
+                "usuario_id": uid, "delta": -1, "motivo": "renovacion", "hecho_por": "servicio_vip"
+            }).execute()
+        except Exception:
+            pass
+
         recalc_cuentas_asignadas(uid)
         finish_operation(op["id"], "completado", raw_resp=reply)
         await say_ok(update, f"Account Update [{esc(correo)}]: {esc(fmt_fecha_show(nueva))}")
